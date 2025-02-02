@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rare Beauty</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    /* Your existing CSS */
+    /* Add the cart CSS here */
+    .cart-sidebar {
+      position: fixed;
+      top: 0;
+      right: -400px;
+      width: 300px;
+      height: 100%;
+      background-color: #fff;
+      box-shadow: -4px 0 10px rgba(0, 0, 0, 0.2);
+      overflow-y: auto;
+      transition: right 0.3s ease;
+      z-index: 100;
+      padding: 20px;
+    }
+    .cart-sidebar.active {
+      right: 0;
+    }
+    /* Rest of the cart CSS */
+  </style>
+</head>
+<body>
+  <!-- Existing content -->
+
+  <!-- Cart Sidebar -->
+  <div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-header">
+      <h2>Your Bag</h2>
+      <button onclick="toggleCart()">&times;</button>
+    </div>
+    <div class="cart-items" id="cartItems">
+      <!-- Items will be dynamically inserted here -->
+    </div>
+    <div class="cart-footer">
+      <p>Total: LEK <span id="cartTotal">0</span></p>
+      <button class="checkout-btn">Checkout</button>
+    </div>
+  </div>
+
+  <script>
+    // Your existing JavaScript
+    // Add the cart JavaScript here
+    const cart = [];
+    function toggleCart() {
+      const cartSidebar = document.getElementById('cartSidebar');
+      cartSidebar.classList.toggle('active');
+    }
+    function addToCart(name, price, image) {
+      const existingItem = cart.find(item => item.name === name);
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        cart.push({ name, price, image, quantity: 1 });
+      }
+      renderCart();
+    }
+    function updateQuantity(name, delta) {
+      const cartItem = cart.find(item => item.name === name);
+      if (cartItem) {
+        cartItem.quantity += delta;
+        if (cartItem.quantity <= 0) {
+          cart.splice(cart.indexOf(cartItem), 1);
+        }
+        renderCart();
+      }
+    }
+    function renderCart() {
+      const cartItems = document.getElementById('cartItems');
+      const cartTotal = document.getElementById('cartTotal');
+      cartItems.innerHTML = '';
+      let total = 0;
+      cart.forEach(item => {
+        total += item.price * item.quantity;
+        cartItems.innerHTML += `
+          <div class="cart-item">
+            <img src="${item.image}" alt="${item.name}">
+            <span>${item.name}</span>
+            <div class="quantity-control">
+              <button onclick="updateQuantity('${item.name}', -1)">-</button>
+              <span>${item.quantity}</span>
+              <button onclick="updateQuantity('${item.name}', 1)">+</button>
+            </div>
+            <span>LEK ${item.price * item.quantity}</span>
+          </div>
+        `;
+      });
+      cartTotal.textContent = total;
+    }
+  </script>
+</body>
+</html>
